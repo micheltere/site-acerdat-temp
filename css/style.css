@@ -1,0 +1,433 @@
+/* Importação da Fonte (continua igual) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* PASSO 1: DEFINIÇÃO DA PALETA DE CORES (VARIÁVEIS GLOBAIS)
+  :root é um seletor que representa a raiz do documento. 
+  É o lugar perfeito para declarar variáveis globais.
+*/
+:root {
+    --cor-primaria: #005A8D;     /* Um azul corporativo, sóbrio */
+    --cor-secundaria: #4CAF50;    /* Um verde vibrante para botões e destaques */
+    --cor-fundo: #E8F1F2;        /* Um fundo muito claro, com um toque de azul */
+    --cor-texto: #13293D;        /* Um azul bem escuro para textos (em vez de preto) */
+    --cor-branca: #FFFFFF;        /* Branco puro, para usar em contrastes */
+}
+
+/* Reset Básico (continua igual) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* PASSO 2: APLICANDO AS CORES DA PALETA
+  Agora usamos a função var() para chamar nossas cores.
+*/
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--cor-fundo); /* Usando a variável para a cor de fundo */
+    color: var(--cor-texto);            /* Usando a variável para a cor do texto */
+}
+
+/* ===== ESTILOS DO CABEÇALHO E NAVEGAÇÃO ===== */
+
+header {
+    background-color: var(--cor-primaria);
+    color: var(--cor-branca);
+    padding: 15px 30px; /* 15px de espaço em cima/baixo, 30px nas laterais */
+    
+    /* Ativando o Flexbox! */
+    display: flex;
+    justify-content: space-between; /* Coloca espaço MÁXIMO entre os itens */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+}
+
+/* Estilo para o H1 dentro do header (nosso 'logo') */
+header h1 {
+    font-size: 24px;
+}
+
+/* Estilo para a lista da navegação */
+nav ul {
+    list-style: none; /* Remove as bolinhas da lista */
+    display: flex; /* Deixa os itens da lista na horizontal */
+    gap: 20px; /* Cria um espaço de 20px ENTRE cada item do menu */
+}
+
+/* Estilo para os links da navegação */
+nav a {
+    color: var(--cor-branca);
+    text-decoration: none; /* Remove o sublinhado padrão dos links */
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: color 0.3s ease; /* Adiciona uma transição suave para o hover */
+}
+
+/* EFEITO HOVER: O que acontece ao passar o mouse sobre o link */
+nav a:hover {
+    color: var(--cor-secundaria); /* Muda a cor para nosso verde de destaque */
+}
+
+/* ===== ESTILOS DA SEÇÃO DE DESTAQUE (HERO) ===== */
+
+#carrossel-destaques {
+    /* A mágica do fundo: imagem com um filtro escuro por cima */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../imagens/foto-destaque.jpg');
+    
+    /* Configurações para a imagem de fundo */
+    background-size: cover; /* Faz a imagem cobrir toda a área */
+    background-position: center; /* Centraliza a imagem */
+
+    height: 80vh; /* Define a altura como 80% da altura da tela do navegador */
+    color: var(--cor-branca);
+
+    /* Usando Flexbox para centralizar o conteúdo de texto */
+    display: flex;
+    flex-direction: column; /* Empilha os itens (h2 e p) um sobre o outro */
+    justify-content: center; /* Alinha no centro vertical */
+    align-items: center; /* Alinha no centro horizontal */
+    text-align: center; /* Centraliza o texto caso ele quebre a linha */
+}
+
+/* Estilizando o título da seção de destaque */
+#carrossel-destaques h2 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 15px; /* Espaço abaixo do título */
+}
+
+/* Estilizando o parágrafo da seção de destaque */
+#carrossel-destaques p {
+    font-size: 22px;
+}
+
+/* ===== ESTILOS DA SEÇÃO DE APRESENTAÇÃO ===== */
+
+#apresentacao {
+   background-color: var(--cor-branca); /* Fundo branco para contraste */
+   padding: 60px; /* Espaçamento interno maior para o texto respirar */
+   text-align: center; /* Centralizar o texto da seção */
+}
+
+#apresentacao h2 {
+   font-size: 36px;
+   color: var(--cor-primaria); /* Título com a cor primária para destaque */
+   margin-bottom: 20px;
+}
+
+#apresentacao p {
+   font-size: 18px;
+   line-height: 1.6; /* Aumenta o espaçamento entre as linhas para melhor leitura */
+   max-width: 800px; /* Limita a largura do texto para evitar linhas muito longas */
+   margin: 0 auto; /* Centraliza o bloco de texto na horizontal */
+}
+
+/* ===== ESTILOS DA SEÇÃO DE PROJETOS EM FOCO ===== */
+
+#projetos-em-foco {
+    padding: 60px 30px; /* Espaçamento interno */
+    background-color: var(--cor-fundo); /* Fundo com nosso cinza-azulado claro */
+}
+
+#projetos-em-foco h2 {
+    text-align: center;
+    font-size: 36px;
+    color: var(--cor-primaria);
+    margin-bottom: 40px; /* Mais espaço abaixo do título */
+}
+
+.card-container {
+    display: flex; /* Flexbox para alinhar os cards */
+    justify-content: center; /* Centraliza o conjunto de cards */
+    gap: 30px; /* Espaço entre os cards */
+    flex-wrap: wrap; /* Permite que os cards quebrem para a linha de baixo em telas menores */
+}
+
+.card {
+    background-color: var(--cor-branca);
+    border-radius: 10px; /* Cantos arredondados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para efeito 3D */
+    overflow: hidden; /* Garante que a imagem não vaze dos cantos arredondados */
+    max-width: 350px; /* Largura máxima de cada card */
+    transition: transform 0.3s ease; /* Animação suave para o hover */
+}
+
+.card:hover {
+    transform: translateY(-10px); /* Levanta o card um pouco ao passar o mouse */
+}
+
+.card img {
+    width: 100%; /* Faz a imagem ocupar toda a largura do card */
+    height: 200px; /* Altura fixa para as imagens */
+    object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-content h3 {
+    font-size: 22px;
+    color: var(--cor-primaria);
+    margin-bottom: 10px;
+}
+
+.card-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.botao {
+    display: inline-block;
+    background-color: var(--cor-secundaria); /* Nosso verde de destaque */
+    color: var(--cor-branca);
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.botao:hover {
+    background-color: #3e8e41; /* Um tom de verde um pouco mais escuro */
+}
+
+/* ===== ESTILOS DO RODAPÉ ===== */
+
+footer {
+    background-color: var(--cor-primaria); /* Mesmo azul do cabeçalho */
+    color: var(--cor-branca);
+    text-align: center; /* Centraliza o texto */
+    padding: 20px; /* Espaçamento interno */
+    margin-top: 40px; /* Cria um espaço entre a seção de projetos e o rodapé */
+}
+
+
+
+/* ===== ESTILOS DAS PÁGINAS DE CONTEÚDO INTERNO ===== */
+
+.pagina-conteudo {
+    max-width: 900px; /* Define uma largura máxima para o conteúdo */
+    margin: 40px auto; /* Centraliza o bloco de conteúdo na página e adiciona espaço em cima/baixo */
+    padding: 0 20px; /* Adiciona um respiro nas laterais */
+    background-color: var(--cor-branca);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 40px;
+}
+
+.pagina-conteudo h2 {
+    color: var(--cor-primaria);
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.pagina-conteudo p {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+
+/* ===== ESTILOS DA PÁGINA DE CONTATO E FORMULÁRIO ===== */
+
+.info-contato {
+    margin: 30px 0;
+    line-height: 1.8;
+}
+
+.info-contato p {
+    margin-bottom: 5px;
+}
+
+.formulario-contato {
+    margin-top: 30px;
+}
+
+.form-grupo {
+    margin-bottom: 20px;
+}
+
+.form-grupo label {
+    display: block; /* Faz a label ocupar uma linha inteira */
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--cor-primaria);
+}
+
+/* Estilo unificado para campos de texto e área de texto */
+.form-grupo input,
+.form-grupo textarea {
+    width: 100%; /* Ocupa toda a largura do contêiner */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif; /* Garante a mesma fonte do site */
+}
+
+/* Foco visual ao clicar no campo */
+.form-grupo input:focus,
+.form-grupo textarea:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 5px rgba(0, 90, 141, 0.5);
+}
+
+/* Reutilizando e adaptando nosso estilo de botão */
+.formulario-contato .botao {
+    width: 100%;
+    font-size: 18px;
+    padding: 15px;
+}
+
+/* ===== ESTILOS DA PÁGINA COMO AJUDAR ===== */
+
+.opcoes-ajuda {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+    flex-wrap: wrap; /* Garante a responsividade */
+}
+
+.opcao-card {
+    background-color: #fdfdfd;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.opcao-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Estilo para o ícone */
+.opcao-card i {
+    font-size: 60px; /* Ícones grandes para impacto */
+    color: var(--cor-primaria);
+    margin-bottom: 20px;
+}
+
+.opcao-card h3 {
+    font-size: 24px;
+    color: var(--cor-primaria);
+    margin-bottom: 15px;
+}
+
+.opcao-card p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* ===== ESTILOS DA PÁGINA DE NOTÍCIAS ===== */
+
+.lista-noticias {
+    margin-top: 40px;
+}
+
+.post {
+    border-bottom: 1px solid #e0e0e0; /* Linha divisória entre os posts */
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+/* Remove a borda do último post para não ficar estranho */
+.lista-noticias .post:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.post-titulo a {
+    text-decoration: none;
+    color: var(--cor-primaria);
+    font-size: 28px;
+}
+
+.post-titulo a:hover {
+    text-decoration: underline; /* Adiciona sublinhado apenas no hover */
+}
+
+.post-meta {
+    font-size: 14px;
+    color: #888;
+    margin: 10px 0;
+}
+
+.post-resumo {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.botao-leia-mais {
+    display: inline-block;
+    margin-top: 15px;
+    color: var(--cor-secundaria);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.botao-leia-mais:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+/* ========================================= */
+/* ===== MEDIA QUERIES (RESPONSIVIDADE) ===== */
+/* ========================================= */
+
+/* Estilos para tablets e celulares (telas de até 768px de largura) */
+@media (max-width: 768px) {
+
+    /* --- 1. Corrigindo o Cabeçalho e Navegação --- */
+    header {
+        flex-direction: column; /* Empilha o logo e a navegação */
+        gap: 15px; /* Adiciona um espaço entre o logo e a navegação */
+    }
+
+    nav ul {
+        flex-direction: column; /* Empilha os itens do menu */
+        align-items: center; /* Centraliza os itens do menu */
+        gap: 10px;
+    }
+
+
+    /* --- 2. Corrigindo a Seção Hero --- */
+    #carrossel-destaques {
+        height: 60vh; /* Diminui um pouco a altura em telas menores */
+    }
+
+    #carrossel-destaques h2 {
+        font-size: 36px; /* Diminui o tamanho do título principal */
+    }
+
+    #carrossel-destaques p {
+        font-size: 18px; /* Diminui o tamanho do subtítulo */
+    }
+
+    /* --- 3. Corrigindo a Seção de Apresentação --- */
+    #apresentacao {
+        padding: 40px 20px; /* Diminui o espaçamento interno em telas menores */
+    }
+
+
+    /* --- 4. Corrigindo os Cards de Projeto --- */
+    .card-container {
+        flex-direction: column; /* A mágica principal: empilha os cards! */
+        align-items: center; /* Centraliza os cards empilhados */
+    }
+
+}
