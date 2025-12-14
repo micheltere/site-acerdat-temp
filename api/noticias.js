@@ -1,5 +1,8 @@
 // api/noticias.js
 const Parser = require('rss-parser');
+const axios = require('axios');
+const cheerio = require('cheerio');
+
 const parser = new Parser();
 
 const fontes = [
@@ -11,8 +14,43 @@ const fontes = [
     { nome: 'Câmara', url: 'https://www.camara.leg.br/noticias/rss/ultimas-noticias', logo: 'https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png' }
 ];
 
+// Sites que SABEMOS que precisam de scraping forçado
+const fontesTeimosas = ['Agência Brasil', 'Câmara', 'RFI'];
+
+async function buscarImagemReal(urlNoticia) {
+    try {
+        // O Disfarce: Fingimos ser um navegador Chrome real
+        const { data } = await axios.get(urlNoticia, { 
+            timeout: 5000, 
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Referer': 'https://www.google.com/'
+            }
+        });
+        
+        const $ = cheerio.load(data);
+        
+        // Tenta pegar a imagem "Open Graph" (usada pelo Facebook/WhatsApp)
+        let imagem = $('meta[property="og:image"]').attr('content');
+        
+        // Se não achar, tenta Twitter Card
+        if (!imagem) imagem = $('meta[name="twitter:image"]').attr('content');
+        
+        // Se a imagem for relativa (começar com /), coloca o domínio na frente
+        if (imagem && imagem.startsWith('/')) {
+            const urlBase = new URL(urlNoticia).origin;
+            imagem = urlBase + imagem;
+        }
+
+        return imagem;
+    } catch (error) {
+        console.log(`Falha ao raspar ${urlNoticia}:`, error.message);
+        return null; 
+    }
+}
+
 module.exports = async (req, res) => {
-    // Permite acesso de qualquer lugar
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
 
@@ -22,18 +60,28 @@ module.exports = async (req, res) => {
         const promessas = fontes.map(async (fonte) => {
             try {
                 const feed = await parser.parseURL(fonte.url);
-                const itens = feed.items.slice(0, 2); // Pega 2 notícias
+                const itensRecentes = feed.items.slice(0, 2); // 2 de cada para ser rápido
 
-                return itens.map(item => {
+                const noticiasProcessadas = await Promise.all(itensRecentes.map(async (item) => {
                     let imagemFinal = null;
-                    // Tenta achar imagem apenas no RSS (sem entrar no site)
-                    if (item.enclosure && item.enclosure.url) imagemFinal = item.enclosure.url;
-                    else if (item["content:encoded"]) {
-                        const match = item["content:encoded"].match(/src="([^"]+)"/);
-                        if (match) imagemFinal = match[1];
+                    const precisaRaspar = fontesTeimosas.includes(fonte.nome);
+
+                    // 1. Tenta RSS (se não for fonte teimosa)
+                    if (!precisaRaspar) {
+                        if (item.enclosure && item.enclosure.url) imagemFinal = item.enclosure.url;
+                        else if (item["content:encoded"]) {
+                            const match = item["content:encoded"].match(/src="([^"]+)"/);
+                            if (match) imagemFinal = match[1];
+                        }
                     }
-                    
-                    // Se não achou, usa o logo
+
+                    // 2. Se for teimosa ou se a imagem do RSS for ruim, ativa o SCRAPING
+                    if (precisaRaspar || !imagemFinal || imagemFinal.includes('placeholder') || imagemFinal.includes('ebc.png')) {
+                         const imgScrap = await buscarImagemReal(item.link);
+                         if (imgScrap) imagemFinal = imgScrap;
+                    }
+
+                    // 3. Último caso: Logo
                     if (!imagemFinal) imagemFinal = fonte.logo;
 
                     return {
@@ -43,25 +91,20 @@ module.exports = async (req, res) => {
                         fonte: fonte.nome,
                         data: item.pubDate
                     };
-                });
+                }));
+                
+                todasNoticias.push(...noticiasProcessadas);
             } catch (e) {
-                console.error(`Erro na fonte ${fonte.nome}: ${e.message}`);
-                return [];
+                console.error(`Erro na fonte ${fonte.nome}`);
             }
         });
 
-        const resultados = await Promise.all(promessas);
-        
-        // Junta tudo em uma lista só (flat)
-        todasNoticias = resultados.flat();
-        
-        // Ordena
+        await Promise.all(promessas);
         todasNoticias.sort((a, b) => new Date(b.data) - new Date(a.data));
-
+        
         res.status(200).json(todasNoticias);
 
     } catch (error) {
-        console.error("Erro geral na API:", error);
-        res.status(500).json({ error: "Erro interno no servidor" });
+        res.status(500).json({ error: "Erro interno" });
     }
 };
