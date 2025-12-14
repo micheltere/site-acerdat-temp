@@ -11,7 +11,7 @@
 <body>
 
     <header>
-        <h1>ACERDAT</h1> <<nav>
+        <h1>ACERDAT</h1> <nav>
     <ul>
         <li><a href="index.html">Início</a></li>
         <li><a href="quem-somos.html">Quem Somos</a></li>
@@ -34,7 +34,26 @@
             <h2>Lutamos por um futuro melhor</h2>
             <p>Este é o espaço para aquele conteúdo textual curto e estimulante sobre a missão e a luta da organização.</p>
         </section>
-
+<section id="giro-noticias">
+    <div class="header-noticias">
+        <h2>Giro de Notícias</h2>
+        <div class="controles-carrossel">
+    <button id="btn-voltar" class="btn-nav" title="Voltar notícas">
+        <i class='bx bx-chevron-left'></i>
+    </button>
+    
+    <button id="btn-avancar" class="btn-nav" title="Avançar notícias">
+        <i class='bx bx-chevron-right'></i>
+    </button>
+</div>
+    </div>
+    
+    <div class="carrossel-container">
+        <div class="carrossel-trilho" id="container-noticias">
+            <p style="padding: 20px;">Carregando fontes oficiais...</p>
+        </div>
+    </div>
+</section>
         <section id="projetos-em-foco">
     <h2>Conheça Nossos Projetos</h2>
 
@@ -73,6 +92,8 @@
     <footer>
         <p>&copy; 2025 - ACERDAT. Todos os direitos reservados.</p>
         </footer>
+
+        <script src="js/noticias.js"></script>
 
 </body>
 </html>

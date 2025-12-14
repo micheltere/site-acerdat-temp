@@ -379,9 +379,159 @@ footer {
     text-decoration: underline;
 }
 
+/* ================================================= */
+/* ===== ESTILOS DO CARROSSEL (GIRO DE NOTÍCIAS) ===== */
+/* ================================================= */
 
+#giro-noticias {
+    padding: 40px 0;
+    background-color: #f5f7fa;
+    overflow: hidden; /* Evita barra de rolagem horizontal na página */
+}
 
+/* Cabeçalho com Título e Botões */
+.header-noticias {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 20px auto;
+    padding: 0 20px;
+}
 
+.header-noticias h2 {
+    color: var(--cor-primaria);
+    font-size: 28px;
+    margin: 0;
+}
+
+/* Botões de Navegação (< >) */
+.controles-carrossel {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-nav {
+    background-color: var(--cor-branca);
+    border: 1px solid #ddd;
+    border-radius: 50%; /* Faz o botão ficar redondo */
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--cor-primaria);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-nav:hover {
+    background-color: var(--cor-primaria);
+    color: #fff;
+    border-color: var(--cor-primaria);
+}
+
+/* --- ESTRUTURA DO TRILHO (O que faz deslizar) --- */
+.carrossel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    /* ESSENCIAL: Esconde os cards que estão fora da área visível */
+    overflow: hidden; 
+    padding: 10px 0 40px 0; /* Espaço para a sombra não cortar */
+}
+
+.carrossel-trilho {
+    /* ESSENCIAL: Coloca os cards lado a lado */
+    display: flex; 
+    gap: 20px;
+    /* ESSENCIAL: A animação suave do deslize */
+    transition: transform 0.5s ease-in-out; 
+    padding-left: 20px; /* Alinhamento visual com o título */
+}
+
+/* --- ESTILO DOS CARDS (TIPO MSN) --- */
+.news-card {
+    min-width: 300px;
+    max-width: 300px;
+    height: 400px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-decoration: none;
+    /* ESSENCIAL: Impede que o card seja esmagado */
+    flex-shrink: 0; 
+    transition: transform 0.3s ease;
+}
+
+.news-card:hover {
+    transform: scale(1.02);
+}
+
+.news-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: opacity 0.5s;
+}
+
+.news-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    z-index: 2;
+    /* Gradiente preto para leitura */
+    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6) 60%, transparent);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.news-source-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: var(--cor-secundaria);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    align-self: flex-start;
+}
+
+.news-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.3;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Responsividade do Card */
+@media (max-width: 768px) {
+    .news-card {
+        min-width: 260px;
+        height: 350px;
+    }
+}
 
 
 
