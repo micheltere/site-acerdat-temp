@@ -3,37 +3,77 @@ const Parser = require('rss-parser');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const parser = new Parser();
+// Configuração do Leitor de RSS
+const parser = new Parser({
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8'
+    },
+    timeout: 5000
+});
 
-// Configuração centralizada das fontes
+// LISTA DE FONTES COM CONFIGURAÇÃO INDIVIDUAL
 const fontes = [
-    { id: 0, nome: 'ONU News', url: 'https://news.un.org/feed/subscribe/pt/news/all/rss.xml', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_the_United_Nations.svg/1200px-Flag_of_the_United_Nations.svg.png' },
-    { id: 1, nome: 'DW Brasil', url: 'https://rss.dw.com/xml/rss-br-news', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png' },
-    { id: 2, nome: 'RFI', url: 'https://www.rfi.fr/br/geral/rss', logo: 'https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png' },
-    { id: 3, nome: 'Agência Brasil', url: 'https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml', logo: 'https://agenciabrasil.ebc.com.br/sites/default/files/logo-ebc-agencia-brasil.png' },
-    { id: 4, nome: 'Senado', url: 'https://www12.senado.leg.br/noticias/feed/todas-as-noticias/rss', logo: 'https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png' },
-    { id: 5, nome: 'Câmara', url: 'https://www.camara.leg.br/noticias/rss/ultimas-noticias', logo: 'https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png' }
+    { 
+        id: 0, 
+        nome: 'ONU News', 
+        url: 'https://news.un.org/feed/subscribe/pt/news/all/rss.xml', 
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_the_United_Nations.svg/1200px-Flag_of_the_United_Nations.svg.png',
+        usarScraping: false // ONU bloqueia robôs, confiamos no RSS
+    },
+    { 
+        id: 1, 
+        nome: 'DW Brasil', 
+        url: 'https://rss.dw.com/xml/rss-br-news', 
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png',
+        usarScraping: false // DW bloqueia robôs, confiamos no RSS
+    },
+    { 
+        id: 2, 
+        nome: 'RFI', 
+        url: 'https://www.rfi.fr/br/geral/rss', 
+        logo: 'https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png',
+        usarScraping: false // RFI costuma ter imagem no RSS
+    },
+    { 
+        id: 3, 
+        nome: 'Agência Brasil', 
+        url: 'https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml', 
+        logo: 'https://agenciabrasil.ebc.com.br/sites/default/files/logo-ebc-agencia-brasil.png',
+        usarScraping: true // RSS manda imagem preta, PRECISA de scraping
+    },
+    { 
+        id: 4, 
+        nome: 'Senado', 
+        url: 'https://www12.senado.leg.br/noticias/feed/todas-as-noticias/rss', 
+        logo: 'https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png',
+        usarScraping: true // Imagens do RSS são pequenas, scraping ajuda
+    },
+    { 
+        id: 5, 
+        nome: 'Câmara', 
+        url: 'https://www.camara.leg.br/noticias/rss/ultimas-noticias', 
+        logo: 'https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png',
+        usarScraping: true // RSS muitas vezes sem imagem
+    }
 ];
 
-// Função de Raspagem Real (Simulando Browser)
+// Função de Raspagem (Só será usada para os nacionais)
 async function buscarImagemReal(urlNoticia) {
     try {
         const { data } = await axios.get(urlNoticia, { 
-            timeout: 5000, // 5 segundos max por página
+            timeout: 4000, 
             headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
             }
         });
         
         const $ = cheerio.load(data);
         
-        // Busca a imagem nas tags de redes sociais
         let imagem = $('meta[property="og:image"]').attr('content') || 
                      $('meta[name="twitter:image"]').attr('content') ||
                      $('link[rel="image_src"]').attr('href');
 
-        // Corrige URL relativa se necessário (ex: /imagem.jpg -> https://site.com/imagem.jpg)
         if (imagem && !imagem.startsWith('http')) {
             const urlBase = new URL(urlNoticia).origin;
             imagem = imagem.startsWith('/') ? urlBase + imagem : urlBase + '/' + imagem;
@@ -41,7 +81,7 @@ async function buscarImagemReal(urlNoticia) {
 
         return imagem;
     } catch (error) {
-        console.error(`Erro ao raspar ${urlNoticia}: ${error.message}`);
+        console.error(`Erro scraping: ${error.message}`);
         return null;
     }
 }
@@ -50,10 +90,9 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
 
-    // Pega o ID da fonte que o Frontend pediu (ex: ?id=3)
     const { id } = req.query;
     
-    // Se não mandou ID ou ID inválido, retorna erro
+    // Validação básica
     if (id === undefined || !fontes[id]) {
         return res.status(400).json({ error: "Fonte inválida" });
     }
@@ -62,27 +101,33 @@ module.exports = async (req, res) => {
 
     try {
         const feed = await parser.parseURL(fonte.url);
-        // Pega as 3 notícias mais recentes
-        const itens = feed.items.slice(0, 3); 
+        // Pegamos até 4 notícias
+        const itens = feed.items.slice(0, 4); 
 
-        // Processa as 3 notícias EM PARALELO (muito rápido)
         const noticiasProcessadas = await Promise.all(itens.map(async (item) => {
             let imagemFinal = null;
 
-            // 1. Tenta RSS primeiro
-            if (item.enclosure && item.enclosure.url) imagemFinal = item.enclosure.url;
-            else if (item["content:encoded"]) {
+            // 1. TENTA PEGAR DO RSS (Funciona bem para Internacionais)
+            if (item.enclosure && item.enclosure.url) {
+                imagemFinal = item.enclosure.url;
+            } else if (item["content:encoded"]) {
                 const match = item["content:encoded"].match(/src="([^"]+)"/);
+                if (match) imagemFinal = match[1];
+            } else if (item.content) {
+                const match = item.content.match(/src="([^"]+)"/);
                 if (match) imagemFinal = match[1];
             }
 
-            // 2. Se a imagem for ruim, placeholder ou não existir -> RASPA O SITE
-            if (!imagemFinal || imagemFinal.includes('placeholder') || imagemFinal.includes('ebc.png') || imagemFinal.includes('logo')) {
-                const imgScrap = await buscarImagemReal(item.link);
-                if (imgScrap) imagemFinal = imgScrap;
+            // 2. SCRAPING SELETIVO
+            // Só ativa o robô pesado se a fonte permitir E se a imagem estiver ruim/ausente
+            if (fonte.usarScraping) {
+                if (!imagemFinal || imagemFinal.includes('placeholder') || imagemFinal.includes('ebc.png') || imagemFinal.includes('logo')) {
+                    const imgScrap = await buscarImagemReal(item.link);
+                    if (imgScrap) imagemFinal = imgScrap;
+                }
             }
 
-            // 3. Último caso: Logo
+            // 3. FALLBACK (Logo)
             if (!imagemFinal) imagemFinal = fonte.logo;
 
             return {
@@ -94,12 +139,11 @@ module.exports = async (req, res) => {
             };
         }));
 
-        // Retorna apenas as notícias dessa fonte
         res.status(200).json(noticiasProcessadas);
 
     } catch (error) {
-        console.error(`Erro fatal na fonte ${fonte.nome}:`, error);
-        // Retorna array vazio para não quebrar o front
+        console.error(`Erro na fonte ${fonte.nome}:`, error);
+        // Se der erro, retorna lista vazia (não quebra o site)
         res.status(200).json([]); 
     }
 };
