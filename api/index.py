@@ -6,25 +6,32 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-# Configuração das Fontes
+# Configuração das Fontes (LINKS CORRIGIDOS)
 fontes = [
     # 0: ONU
     { "id": 0, "nome": "ONU News", "url": "https://news.un.org/feed/subscribe/pt/news/all/rss.xml", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_the_United_Nations.svg/1200px-Flag_of_the_United_Nations.svg.png", "raspar": False },
-    # 1: DW (Vamos usar Força Bruta para achar a imagem)
-    { "id": 1, "nome": "DW Brasil", "url": "https://rss.dw.com/xml/rss-br-news", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png", "raspar": False },
-    # 2: RFI (Raspagem obrigatória)
-    { "id": 2, "nome": "RFI", "url": "https://www.rfi.fr/br/geral/rss", "logo": "https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png", "raspar": True },
+    
+    # 1: DW Brasil (LINK NOVO: rss-br-all)
+    # rss-br-news estava vazio. rss-br-all traz todo o conteúdo do Brasil.
+    { "id": 1, "nome": "DW Brasil", "url": "https://rss.dw.com/xml/rss-br-all", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png", "raspar": False },
+    
+    # 2: RFI Brasil (LINK NOVO: /br/rss)
+    # O link antigo dava 404. Este é o oficial ativo.
+    { "id": 2, "nome": "RFI", "url": "https://www.rfi.fr/br/rss", "logo": "https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png", "raspar": True },
+    
     # 3: Agência Brasil
     { "id": 3, "nome": "Agência Brasil", "url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml", "logo": "https://agenciabrasil.ebc.com.br/sites/default/files/logo-ebc-agencia-brasil.png", "raspar": True },
+    
     # 4: Senado
     { "id": 4, "nome": "Senado", "url": "https://www12.senado.leg.br/noticias/feed/todas-as-noticias/rss", "logo": "https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png", "raspar": True },
+    
     # 5: Câmara
     { "id": 5, "nome": "Câmara", "url": "https://www.camara.leg.br/noticias/rss/ultimas-noticias", "logo": "https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png", "raspar": True }
 ]
 
 # Função Sherlock Holmes: Acha imagem em qualquer lugar do texto
 def cacar_imagem_na_forca_bruta(entry):
-    # 1. Tenta o padrão do feedparser
+    # 1. Tenta o padrão do feedparser (Media Content da DW)
     if hasattr(entry, 'media_content') and len(entry.media_content) > 0:
         return entry.media_content[0]['url']
     if hasattr(entry, 'media_thumbnail') and len(entry.media_thumbnail) > 0:
@@ -89,13 +96,13 @@ class handler(BaseHTTPRequestHandler):
             # Baixa o RSS
             resp = requests.get(fonte_atual['url'], headers=headers_rss, timeout=8)
             
-            # Verifica se deu erro HTTP (403, 404, 500)
+            # Verifica se deu erro HTTP
             if resp.status_code != 200:
                 raise Exception(f"Status HTTP {resp.status_code}")
 
             feed = feedparser.parse(resp.content)
 
-            # Se o RSS baixou mas não tem notícias (parsing falhou)
+            # Se o RSS baixou mas não tem notícias
             if len(feed.entries) == 0:
                 raise Exception("RSS vazio ou ilegível")
 
@@ -103,7 +110,7 @@ class handler(BaseHTTPRequestHandler):
                 try:
                     imagem_final = None
 
-                    # 1. Tenta achar imagem no RSS (Método Sherlock)
+                    # 1. Tenta achar imagem no RSS (Método Sherlock - Pega DW no media_content)
                     imagem_final = cacar_imagem_na_forca_bruta(entry)
 
                     # 2. Se a configuração manda raspar (RFI) ou imagem for ruim
@@ -129,7 +136,7 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(noticias_formatadas).encode('utf-8'))
 
         except Exception as e:
-            # MODO DIAGNÓSTICO: Retorna o erro como um card visível
+            # Card de Erro
             erro_card = [{
                 "titulo": f"ERRO [{fonte_atual['nome'] if fonte_atual else id_fonte}]: {str(e)}",
                 "link": "#",
