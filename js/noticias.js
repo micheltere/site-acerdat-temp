@@ -14,7 +14,8 @@ async function carregarNoticias() {
     const pedidos = fontesIds.map(async (id) => {
         try {
             // Chama a API pedindo SÓ aquela fonte (ex: api/noticias?id=3)
-            const res = await fetch(`/api/noticias?id=${id}`);
+             // Chamando o arquivo index.py do Python
+            const res = await fetch(`/api?id=${id}`);
             const noticias = await res.json();
             
             if (Array.isArray(noticias)) {
