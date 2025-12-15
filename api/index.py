@@ -6,25 +6,25 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-# Configuração das Fontes (LINKS CORRIGIDOS E VERIFICADOS)
+# Configuração das Fontes (LINKS CORRIGIDOS E TESTADOS)
 fontes = [
     # 0: ONU (Funcionando)
     { "id": 0, "nome": "ONU News", "url": "https://news.un.org/feed/subscribe/pt/news/all/rss.xml", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_the_United_Nations.svg/1200px-Flag_of_the_United_Nations.svg.png", "raspar": False },
     
-    # 1: DW Brasil (MUDANÇA: Formato RDF)
-    # O link XML antigo estava vazio. O RDF é o padrão oficial agora.
-    { "id": 1, "nome": "DW Brasil", "url": "https://rss.dw.com/rdf/rss-br-all", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png", "raspar": False },
+    # 1: DW Brasil (LINK NOVO: rss-br-br)
+    # Este é o único link RDF que está ativo e populado para o Brasil.
+    { "id": 1, "nome": "DW Brasil", "url": "https://rss.dw.com/rdf/rss-br-br", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png", "raspar": False },
     
-    # 2: RFI (CORREÇÃO: Volta para /geral/rss)
-    # O link curto /rss deu 404. O /geral/rss é o correto.
-    { "id": 2, "nome": "RFI", "url": "https://www.rfi.fr/br/geral/rss", "logo": "https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png", "raspar": True },
+    # 2: RFI (LINK ALTERNATIVO: /pt/rss)
+    # O link /br/rss morreu. Usamos o /pt/rss (Português Geral) que funciona.
+    { "id": 2, "nome": "RFI", "url": "https://www.rfi.fr/pt/rss", "logo": "https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png", "raspar": True },
     
     # 3: Agência Brasil (Funcionando)
     { "id": 3, "nome": "Agência Brasil", "url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml", "logo": "https://agenciabrasil.ebc.com.br/sites/default/files/logo-ebc-agencia-brasil.png", "raspar": True },
     
-    # 4: Senado (CORREÇÃO: Retirar hífens)
-    # Errado: todas-as-noticias | Certo: todasnoticias
-    { "id": 4, "nome": "Senado", "url": "https://www12.senado.leg.br/noticias/feed/todasnoticias/RSS", "logo": "https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png", "raspar": True },
+    # 4: Senado (LINK CORRIGIDO: feed/todasnoticias)
+    # Removemos o /RSS do final que causava o erro 404.
+    { "id": 4, "nome": "Senado", "url": "https://www12.senado.leg.br/noticias/feed/todasnoticias", "logo": "https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png", "raspar": True },
     
     # 5: Câmara (Funcionando)
     { "id": 5, "nome": "Câmara", "url": "https://www.camara.leg.br/noticias/rss/ultimas-noticias", "logo": "https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png", "raspar": True }
@@ -102,6 +102,7 @@ class handler(BaseHTTPRequestHandler):
                     imagem_final = None
                     imagem_final = cacar_imagem_na_forca_bruta(entry)
 
+                    # Lógica de Raspagem (Se não tiver imagem ou se for fonte que exige)
                     if fonte_atual['raspar'] or not imagem_final or "placeholder" in str(imagem_final):
                         img_real = pegar_imagem_real(entry.link)
                         if img_real:
@@ -123,7 +124,6 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(noticias_formatadas).encode('utf-8'))
 
         except Exception as e:
-            # Mantém o card de erro para sabermos se falhar de novo
             erro_card = [{
                 "titulo": f"ERRO [{fonte_atual['nome'] if fonte_atual else id_fonte}]: {str(e)}",
                 "link": "#",
