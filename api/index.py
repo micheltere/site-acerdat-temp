@@ -8,25 +8,11 @@ from bs4 import BeautifulSoup
 
 # Configuração das Fontes (LINKS CORRIGIDOS E TESTADOS)
 fontes = [
-    # 0: ONU (Funcionando)
     { "id": 0, "nome": "ONU News", "url": "https://news.un.org/feed/subscribe/pt/news/all/rss.xml", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Flag_of_the_United_Nations.svg/1200px-Flag_of_the_United_Nations.svg.png", "raspar": False },
-    
-    # 1: DW Brasil (LINK NOVO: rss-br-br)
-    # Este é o único link RDF que está ativo e populado para o Brasil.
     { "id": 1, "nome": "DW Brasil", "url": "https://rss.dw.com/rdf/rss-br-br", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Deutsche_Welle_logo.svg/1024px-Deutsche_Welle_logo.svg.png", "raspar": False },
-    
-    # 2: RFI (LINK ALTERNATIVO: /pt/rss)
-    # O link /br/rss morreu. Usamos o /pt/rss (Português Geral) que funciona.
     { "id": 2, "nome": "RFI", "url": "https://www.rfi.fr/pt/rss", "logo": "https://s.rfi.fr/media/display/f605a60e-6f81-11e9-9a6b-005056a99247/rfi-share-fb-tw-default_0.png", "raspar": True },
-    
-    # 3: Agência Brasil (Funcionando)
     { "id": 3, "nome": "Agência Brasil", "url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml", "logo": "https://agenciabrasil.ebc.com.br/sites/default/files/logo-ebc-agencia-brasil.png", "raspar": True },
-    
-    # 4: Senado (LINK CORRIGIDO: feed/todasnoticias)
-    # Removemos o /RSS do final que causava o erro 404.
     { "id": 4, "nome": "Senado", "url": "https://www12.senado.leg.br/noticias/feed/todasnoticias", "logo": "https://www12.senado.leg.br/noticias/++theme++senado.portal.theme/img/senado-federal-share.png", "raspar": True },
-    
-    # 5: Câmara (Funcionando)
     { "id": 5, "nome": "Câmara", "url": "https://www.camara.leg.br/noticias/rss/ultimas-noticias", "logo": "https://www.camara.leg.br/midias/image/2023/04/marca-camara-200-anos-verde-horizontal.png", "raspar": True }
 ]
 
@@ -82,30 +68,55 @@ class handler(BaseHTTPRequestHandler):
             fonte_atual = fontes[id_fonte]
             noticias_formatadas = []
 
-            # Headers Essenciais
             headers_rss = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             }
 
             resp = requests.get(fonte_atual['url'], headers=headers_rss, timeout=10)
-            
+
             if resp.status_code != 200:
                 raise Exception(f"Status HTTP {resp.status_code}")
 
             resp.encoding = resp.apparent_encoding
-            feed = feedparser.parse(resp.text)
 
+            # ---------------------------
+            #  FALLBACK ESPECIAL: SENADO
+            # ---------------------------
+            if id_fonte == 4:
+                soup = BeautifulSoup(resp.text, "xml")
+                entries = soup.find_all("entry")[:4]
 
-            if len(feed.entries) == 0:
-                raise Exception("RSS vazio ou ilegível")
+                if not entries:
+                    raise Exception("RSS vazio ou ilegível")
 
-            for entry in feed.entries[:4]:
-                try:
-                    imagem_final = None
+                for e in entries:
+                    titulo = e.title.text if e.title else "Sem título"
+                    link = e.link["href"] if e.link else "#"
+                    data = e.updated.text if e.find("updated") else ""
+
+                    imagem_final = pegar_imagem_real(link) or fonte_atual["logo"]
+
+                    noticias_formatadas.append({
+                        "titulo": titulo,
+                        "link": link,
+                        "imagem": imagem_final,
+                        "fonte": fonte_atual["nome"],
+                        "data": data
+                    })
+
+            # ---------------------------
+            #  OUTRAS FONTES (feedparser)
+            # ---------------------------
+            else:
+                feed = feedparser.parse(resp.text)
+
+                if len(feed.entries) == 0:
+                    raise Exception("RSS vazio ou ilegível")
+
+                for entry in feed.entries[:4]:
                     imagem_final = cacar_imagem_na_forca_bruta(entry)
 
-                    # Lógica de Raspagem (Se não tiver imagem ou se for fonte que exige)
-                    if fonte_atual['raspar'] or not imagem_final or "placeholder" in str(imagem_final):
+                    if fonte_atual['raspar'] or not imagem_final:
                         img_real = pegar_imagem_real(entry.link)
                         if img_real:
                             imagem_final = img_real
@@ -117,11 +128,9 @@ class handler(BaseHTTPRequestHandler):
                         "titulo": entry.title,
                         "link": entry.link,
                         "imagem": imagem_final,
-                        "fonte": fonte_atual['nome'],
-                        "data": entry.published if hasattr(entry, 'published') else ""
+                        "fonte": fonte_atual["nome"],
+                        "data": entry.published if hasattr(entry, "published") else ""
                     })
-                except:
-                    continue
 
             self.wfile.write(json.dumps(noticias_formatadas).encode('utf-8'))
 
