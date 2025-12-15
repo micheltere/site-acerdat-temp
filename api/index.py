@@ -92,7 +92,9 @@ class handler(BaseHTTPRequestHandler):
             if resp.status_code != 200:
                 raise Exception(f"Status HTTP {resp.status_code}")
 
-            feed = feedparser.parse(resp.content)
+            resp.encoding = resp.apparent_encoding
+            feed = feedparser.parse(resp.text)
+
 
             if len(feed.entries) == 0:
                 raise Exception("RSS vazio ou ilegível")
