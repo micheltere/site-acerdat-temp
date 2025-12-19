@@ -581,3 +581,53 @@ footer {
     }
 
 }
+
+/* Estilos para a página de Economia Solidária */
+.intro-gt {
+    text-align: center;
+    margin: 40px 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.intro-gt p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.lista-gts h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.grid-gts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.card-gt {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-gt:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #4CAF50; /* Cor verde destaque */
+}
+
+.card-gt h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #4CAF50;
+    display: inline-block;
+    padding-bottom: 5px;
+}
