@@ -32,32 +32,74 @@ body {
 }
 
 /* =========================================
-   2. CABEÇALHO (NOVO VISUAL)
+   2. CABEÇALHO (COM LOGO NA DIREITA)
    ========================================= */
 .site-header {
     background-color: var(--cor-primaria);
     color: var(--cor-branca);
-    padding: 40px 0; /* Mais alto para impor respeito */
-    text-align: center; /* Centralizado para ficar elegante */
+    padding: 30px 0; /* Um pouco menos de altura total */
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     position: relative;
     z-index: 10;
 }
 
-.header-content h1 {
-    font-size: 3rem; /* Fonte BEM GRANDE */
-    font-weight: 900; /* Negrito Extra */
-    text-transform: uppercase; /* Letras Maiúsculas */
-    letter-spacing: 2px; /* Espaçamento entre letras */
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.4); /* Sombra 3D */
-    margin-bottom: 5px;
+/* O conteiner que segura o texto e a logo */
+.header-content {
+    display: flex; /* Ativa o modo flexível */
+    justify-content: space-between; /* Texto na esquerda, Logo na direita */
+    align-items: center; /* Alinha os dois verticalmente no centro */
 }
 
-.header-content .subtitle {
+/* Bloco de texto alinhado à esquerda */
+.header-text {
+    text-align: left;
+}
+
+.header-text h1 {
+    font-size: 2.8rem; /* Ajustei levemente o tamanho */
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+    margin-bottom: 5px;
+    line-height: 1.1; /* Para títulos com mais de uma linha não ficarem muito espaçados */
+}
+
+.header-text .subtitle {
     font-size: 1.2rem;
     font-weight: 300;
     letter-spacing: 1px;
     opacity: 0.9;
+}
+
+/* Configuração da Logo */
+.header-logo img {
+    max-height: 100px; /* Define a altura MÁXIMA da logo para não estourar o cabeçalho. Ajuste se necessário. */
+    width: auto; /* Mantém a proporção da imagem */
+    display: block; /* Remove espaços extras abaixo da imagem */
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3)); /* Sombra leve na logo */
+}
+
+/* RESPONSIVIDADE DO CABEÇALHO (Celular) */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column; /* Empilha no celular */
+        text-align: center; /* Centraliza tudo */
+        gap: 20px; /* Espaço entre texto e logo */
+    }
+    .header-text {
+        text-align: center;
+        order: 2; /* Texto fica embaixo da logo no celular */
+    }
+    .header-logo {
+        order: 1; /* Logo fica em cima no celular */
+    }
+    .header-text h1 {
+        font-size: 2rem; /* Título menor no celular */
+    }
+    .header-logo img {
+        max-height: 80px; /* Logo um pouco menor no celular */
+    }
 }
 
 /* =========================================
