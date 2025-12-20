@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Economia Solidária - Instituto Brazil Global 3B</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
 
-       <header class="site-header">
-    <div class="container">
-        <div class="header-content">
-            <div class="header-text">
-                <h1>Instituto Brazil Global 3B</h1>
-                <p class="subtitle">ACERDAT Brasil Rural desde 1997</p>
-            </div>
-            <div class="header-logo">
-                <img src="imagens/logo-acerdat.jpg" alt="Logo ACERDAT">
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Instituto Brazil Global 3B</h1>
+                    <p class="subtitle">ACERDAT Brasil Rural desde 1997</p>
+                </div>
+                <div class="header-logo">
+                    <img src="imagens/logo-acerdat.png" alt="Logo ACERDAT">
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <nav class="main-nav">
         <div class="container">
@@ -41,37 +42,65 @@
         <section class="intro-gt">
             <h2>Economia Popular Solidária</h2>
             <p>
-                A Economia Popular Solidária é uma estratégia de desenvolvimento sustentável e solidário. 
-                Nossa atuação é organizada através de Grupos de Trabalho (GTs) que focam em áreas específicas 
-                para fortalecer a autonomia das comunidades rurais.
+                A nossa atuação é organizada através de Grupos de Trabalho (GTs) que focam em áreas específicas 
+                para fortalecer a autonomia das comunidades rurais. Clique nos cards abaixo para ver os detalhes de cada grupo.
             </p>
         </section>
 
-        <hr>
+        <hr style="margin: 30px 0; border-color: #eee;">
 
         <section class="lista-gts">
-            <h3>Nossos Grupos de Trabalho (GTs)</h3>
+            <h3>Nossos Grupos de Trabalho</h3>
             
             <div class="grid-gts">
                 
-                <div class="card-gt">
-                    <h4>GT Produção</h4>
-                    <p>Focado no aprimoramento das técnicas de cultivo, manejo sustentável e aumento da produtividade no campo.</p>
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Agricultura Familiar" 
+                     data-conteudo="<p>Focado no fortalecimento dos pequenos produtores, garantindo segurança alimentar e práticas sustentáveis.</p><ul><li>Apoio técnico para plantio e colheita.</li><li>Incentivo à produção orgânica e agroecológica.</li><li>Acesso a programas de crédito rural.</li></ul>">
+                    <h4>GT Agricultura Familiar</h4>
+                    <p>Fortalecimento de pequenos produtores e segurança alimentar. (Clique para ver mais)</p>
                 </div>
 
-                <div class="card-gt">
-                    <h4>GT Comercialização</h4>
-                    <p>Estratégias para venda direta, feiras orgânicas e acesso a mercados institucionais.</p>
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Artesanato" 
+                     data-conteudo="<p>Valorização da identidade cultural através do trabalho manual, gerando renda e autonomia.</p><ul><li>Capacitação em design e acabamento.</li><li>Resgate de técnicas tradicionais locais.</li><li>Organização de feiras para venda dos produtos.</li></ul>">
+                    <h4>GT Artesanato</h4>
+                    <p>Geração de renda e valorização da cultura manual local. (Clique para ver mais)</p>
                 </div>
 
-                <div class="card-gt">
-                    <h4>GT Formação</h4>
-                    <p>Educação popular, cursos técnicos e capacitação para jovens e adultos rurais.</p>
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Turismo de Base Comunitária" 
+                     data-conteudo="<p>Desenvolvimento de roteiros turísticos que valorizam a vivência local, a natureza e a história da comunidade.</p><ul><li>Criação de trilhas ecológicas.</li><li>Hospedagem familiar e receptivo.</li><li>Turismo de experiência e pedagógico.</li></ul>">
+                    <h4>GT Turismo Comunitário</h4>
+                    <p>Roteiros turísticos que valorizam a vivência e a natureza local. (Clique para ver mais)</p>
                 </div>
 
-                <div class="card-gt">
-                    <h4>GT Meio Ambiente</h4>
-                    <p>Preservação das nascentes, recuperação de áreas degradadas e agroecologia.</p>
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Esporte" 
+                     data-conteudo="<p>Promoção da saúde, lazer e integração social através da prática esportiva para crianças e jovens.</p><ul><li>Organização de campeonatos locais.</li><li>Escolinhas de futebol e vôlei.</li><li>Eventos de caminhada e ciclismo rural.</li></ul>">
+                    <h4>GT Esporte</h4>
+                    <p>Saúde e integração social através do esporte para jovens. (Clique para ver mais)</p>
+                </div>
+
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Cultura" 
+                     data-conteudo="<p>Resgate e preservação das tradições, festas populares e manifestações artísticas da região.</p><ul><li>Apoio a grupos de música e dança.</li><li>Cineclube comunitário.</li><li>Preservação da memória oral dos mais velhos.</li></ul>">
+                    <h4>GT Cultura</h4>
+                    <p>Preservação das tradições, festas e manifestações artísticas. (Clique para ver mais)</p>
+                </div>
+
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Comunicação" 
+                     data-conteudo="<p>Responsável por dar voz à comunidade, divulgar as ações do Instituto e promover a inclusão digital.</p><ul><li>Gestão das redes sociais e site.</li><li>Jornal comunitário e rádio web.</li><li>Oficinas de fotografia e vídeo.</li></ul>">
+                    <h4>GT Comunicação</h4>
+                    <p>Divulgação das ações, inclusão digital e voz da comunidade. (Clique para ver mais)</p>
+                </div>
+
+                <div class="card-gt acionador-modal" 
+                     data-titulo="GT Mulheres" 
+                     data-conteudo="<p>Espaço de acolhimento, empoderamento e luta pelos direitos das mulheres no campo.</p><ul><li>Rodas de conversa e apoio psicológico.</li><li>Cursos de empreendedorismo feminino.</li><li>Combate à violência doméstica.</li></ul>">
+                    <h4>GT Mulheres</h4>
+                    <p>Empoderamento, direitos e empreendedorismo feminino. (Clique para ver mais)</p>
                 </div>
 
             </div>
@@ -84,6 +113,17 @@
             <p>&copy; 2025 Instituto Brazil Global 3B. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <div id="modal-gt" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modal-titulo-placeholder">Título do GT</h3>
+            <div id="modal-corpo-placeholder">
+                </div>
+        </div>
+    </div>
+
+    <script src="js/modal.js"></script>
 
 </body>
 </html>
