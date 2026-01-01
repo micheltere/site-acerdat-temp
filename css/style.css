@@ -106,42 +106,56 @@ body {
    3. MENU DE NAVEGAÇÃO (CORRIGIDO)
    ========================================= */
 .main-nav {
-    background-color: var(--cinza-menu); /* Fundo cinza claro */
-    border-bottom: 4px solid var(--cor-secundaria); /* Borda verde embaixo */
+    background-color: var(--cinza-menu);
+    border-bottom: 4px solid var(--cor-secundaria);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: sticky; /* Opcional: faz o menu grudar no topo ao rolar */
+    position: sticky;
     top: 0;
     z-index: 100;
 }
 
-.main-nav ul {
-    list-style: none;
+.main-nav .container {
     display: flex;
-    justify-content: center; /* Centraliza os botões */
-    flex-wrap: wrap;
+    justify-content: center; /* Centralizado no Desktop */
+    align-items: center;
 }
 
-/* LINKS DO MENU (AQUI ESTAVA O ERRO DA COR BRANCA) */
-.main-nav ul li a {
+/* O Botão Hambúrguer (Escondido no Desktop) */
+.menu-toggle {
+    display: none; 
+    background: none;
+    border: none;
+    font-size: 35px;
+    color: var(--cor-primaria);
+    cursor: pointer;
+    padding: 10px;
+}
+
+/* A Lista de Links (Desktop) */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 5px;
+}
+
+.nav-links li a {
     display: block;
     text-decoration: none;
-    color: var(--cor-primaria); /* AGORA É AZUL ESCURO (VISÍVEL) */
+    color: var(--cor-primaria);
     font-weight: 700;
     font-size: 1.1rem;
-    padding: 15px 25px; /* Botões maiores */
+    padding: 15px 25px;
     transition: all 0.3s ease;
     text-transform: uppercase;
 }
 
-/* Efeito ao passar o mouse */
-.main-nav ul li a:hover {
-    background-color: var(--cor-primaria); /* Fundo vira azul */
-    color: var(--cor-branca); /* Letra vira branca */
+.nav-links li a:hover {
+    background-color: var(--cor-primaria);
+    color: var(--cor-branca);
 }
 
-/* Link da página atual */
-.main-nav ul li a.active {
-    background-color: var(--cor-secundaria); /* Verde */
+.nav-links li a.active {
+    background-color: var(--cor-secundaria);
     color: var(--cor-branca);
 }
 
@@ -525,29 +539,50 @@ footer {
    10. RESPONSIVIDADE (Celular)
    ========================================= */
 @media (max-width: 768px) {
-    .header-content h1 {
-        font-size: 2rem; /* Título menor no celular */
+    
+    /* Arruma o container para alinhar o botão */
+    .main-nav .container {
+        justify-content: flex-start; /* Alinha à esquerda no mobile */
+        padding: 10px 20px;
+        position: relative; /* Para posicionar o menu absoluto se quisesse, mas vamos usar fluxo normal */
+        flex-direction: column; /* Empilha botão e menu */
+        align-items: flex-start;
     }
-    .main-nav ul {
-        flex-direction: column; /* Menu empilhado no celular */
+
+    /* Mostra o botão Hambúrguer */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* Esconde a lista de links inicialmente */
+    .nav-links {
+        display: none; /* SEGredo: Começa invisível */
+        flex-direction: column;
         width: 100%;
+        margin-top: 10px;
+        border-top: 1px solid #ddd;
     }
-    .main-nav ul li a {
-        border-bottom: 1px solid #ddd;
+
+    /* CLASSE MÁGICA: Quando o Javascript adicionar 'active', o menu aparece */
+    .nav-links.active {
+        display: flex;
+        animation: descerMenu 0.3s ease forwards;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links li a {
         padding: 15px;
-        text-align: center;
+        border-bottom: 1px solid #eee;
     }
-    .card-container, .opcoes-ajuda {
-        flex-direction: column;
-        align-items: center;
-    }
-    #carrossel-destaques h2 {
-        font-size: 32px;
-    }
-    .header-noticias {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+
+    /* Animação suave */
+    @keyframes descerMenu {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 }
 
